@@ -27,5 +27,5 @@ echo "Configuring and building DynaSLAM ..."
 
 mkdir build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j
+cmake -DCMAKE_BUILD_TYPE=Debug -DPYTHON_INCLUDE_DIR=/home/lailo/anaconda3/envs/py27/include -DPYTHON_LIBRARY=/home/lailo/anaconda3/envs/py27/lib ..  #Release
+make -j4

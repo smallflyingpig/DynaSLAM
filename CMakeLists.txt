@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaSLAM)
 
+set(CMAKE_CXX_STANDARD 14)
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
   # SET(CMAKE_BUILD_TYPE Debug)
@@ -55,7 +56,8 @@ find_package(Qt5Concurrent REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Test REQUIRED)
 
-find_package(PythonLibs REQUIRED)
+# PYTHON_EXECUTABLE:FILEPATH=/home/lailo/anaconda3/envs/py37/bin/python
+find_package(PythonLibs 3.7 REQUIRED)
 if (NOT PythonLibs_FOUND)
     message(FATAL_ERROR "PYTHON LIBS not found.")
 else()
@@ -74,16 +76,22 @@ endif()
 find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
 
-set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} /usr/local/lib/python2.7/dist-packages/numpy/core/include/numpy)
+set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS}  /home/lailo/anaconda3/envs/py27/lib/python2.7/site-packages/numpy/core/include/numpy  /home/lailo/anaconda3/envs/py27/lib/python2.7/site-packages/numpy/core/include/numpy)
+
+set(Torch_DIR /home/lailo/Workspace/projects/libtorch/share/cmake/Torch)
+find_package(Torch REQUIRED)
+
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
-/usr/include/python2.7/
-/usr/lib/python2.7/dist-packages/numpy/core/include/numpy/
+/home/lailo/anaconda3/envs/py27/include
+/home/lailo/anaconda3/envs/py27/include/python2.7
+/home/lailo/anaconda3/envs/py27/lib/python2.7/site-packages/numpy/core/include/numpy
 ${Boost_INCLUDE_DIRS}
+${Torch_INCLUDE_DIRS}
 )
 message("PROJECT_SOURCE_DIR: " ${PROJECT_SOURCE_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -111,6 +119,7 @@ src/Viewer.cc
 src/Conversion.cc
 src/MaskNet.cc
 src/Geometry.cc
+src/TorchSeg.cc
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -119,8 +128,10 @@ ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
-/usr/lib/x86_64-linux-gnu/libpython2.7.so
+/home/lailo/anaconda3/envs/py27/lib/libpython2.7.so
+/home/lailo/anaconda3/envs/py27/lib/libz.so.1
 ${Boost_LIBRARIES}
+${TORCH_LIBRARIES}
 )
 
 # Build examples
@@ -147,4 +158,7 @@ add_executable(mono_kitti
 Examples/Monocular/mono_kitti.cc)
 target_link_libraries(mono_kitti ${PROJECT_NAME})
 
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/test_segment)
+add_executable(test
+Examples/test_segment/test.cc)
+target_link_libraries(test ${PROJECT_NAME})
